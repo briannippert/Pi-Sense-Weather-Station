@@ -32,6 +32,13 @@
                 curTempP.innerText = CurTemp;
                 curHumidP.innerText = CurHumid;
                 curPressP.innerText = CurPress;
+
+                var avgTempP = document.getElementById("avgTemp");
+                var avgPressP = document.getElementById("avgPress");
+                var avgHumidP = document.getElementById("avgHumid");
+                avgTempP.innerText = avgTemp;
+                avgHumidP.innerText = avgHumid;
+                avgPressP.innerText = avgPress;
             }
 
 
@@ -52,10 +59,24 @@
                 CurTemp = points[2];
                 CurPress = points[3];
 
+                var averageTemp = 0;
+                var averagePress = 0;
+                var averageHumid = 0
+                for (var i = csvLines.length - 2; i > csvLines.length - 1442; i--) {
+                    points = csvLines[i].split(",");
+                    averageTemp += parseFloat(points[2]);
+                    averageHumid += parseFloat(points[0]);
+                    averagePress += parseFloat(points[3]);
 
+                }
+                console.log(averageTemp);
+                avgTemp = parseFloat(averageTemp) / 1440
+                avgHumid = parseFloat(averageHumid) / 1440
+                avgPress = parseFloat(averagePress) / 1440
 
-
-                
+                avgTemp = avgTemp.toFixed(2)
+                avgHumid = avgHumid.toFixed(2)
+                avgPress = avgPress.toFixed(2)
                 updateCurrent();
                 return dataPoints;
             }
