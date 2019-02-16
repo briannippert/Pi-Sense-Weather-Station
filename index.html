@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
@@ -11,11 +13,27 @@
         integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o"
         crossorigin="anonymous"></script>
     <title>Weather</title>
-    <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
     <script type="text/javascript">
+        var CurTemp = 0;
+        var CurHumid = 0;
+        var CurPress = 0;
+
+        var avgTemp;
+        var avgPress;
+        var avgHumid;
         window.onload = function () {
             var dataPoints = [];
+
+            function updateCurrent() {
+                var curTempP = document.getElementById("CurTemp");
+                var curHumidP = document.getElementById("CurHumid");
+                var curPressP = document.getElementById("CurPress");
+                curTempP.innerText = CurTemp;
+                curHumidP.innerText = CurHumid;
+                curPressP.innerText = CurPress;
+            }
+
 
             function getDataPointsFromCSV(csv) {
                 var dataPoints = csvLines = points = [];
@@ -29,6 +47,16 @@
                             y: parseFloat(points[0])
                         });
                     }
+                var points = csvLines[csvLines.length - 2].split(",");
+                CurHumid = points[0];
+                CurTemp = points[2];
+                CurPress = points[3];
+
+
+
+
+                
+                updateCurrent();
                 return dataPoints;
             }
             function getDataPointsFromCSV2(csv) {
@@ -45,7 +73,6 @@
                     }
                 return dataPoints;
             }
-
             function getDataPointsFromCSV3(csv) {
                 var dataPoints = csvLines = points = [];
                 csvLines = csv.split(/[\r?\n|\r|\n]+/);
@@ -61,84 +88,102 @@
                 return dataPoints;
             }
 
-            $.get("http://192.168.1.5/getHumidity", function (data) {
-                var chart = new CanvasJS.Chart("chartContainer", {
-                    title: {
-                        text: "Humidity",
-                    },
-                    data: [{
-                        type: "line",
-                        xValueType: "dateTime",
-                        dataPoints: getDataPointsFromCSV(data)
-                    }]
+            window.setTimeout(update, 1000);
+            window.setTimeout(updateCurrent, 1000);
+
+
+            function update() {
+                $.get("http://192.168.1.5/getHumidity", function (data) {
+                    var chart = new CanvasJS.Chart("chartContainer", {
+                        title: {
+                            text: "Humidity",
+                        },
+                        data: [{
+                            type: "line",
+                            xValueType: "dateTime",
+                            dataPoints: getDataPointsFromCSV(data)
+                        }]
+                    });
+
+                    chart.render();
+
+                });
+                $.get("http://192.168.1.5/getHumidity", function (data) {
+                    var chart = new CanvasJS.Chart("chartContainer2", {
+                        title: {
+                            text: "Temperature",
+                        },
+                        axisY: {
+                            minimum: 60,
+                            maximum: 80,
+                            interval: 5,
+                        },
+                        data: [{
+                            type: "line",
+                            xValueType: "dateTime",
+                            dataPoints: getDataPointsFromCSV2(data)
+                        }]
+                    });
+
+                    chart.render();
+
                 });
 
-                chart.render();
+                $.get("http://192.168.1.5/getHumidity", function (data) {
+                    var chart = new CanvasJS.Chart("chartContainer3", {
+                        title: {
+                            text: "Pressure",
+                        },
+                        axisY: {
+                            minimum: 970,
+                            maximum: 1030,
+                            interval: 10,
+                        },
+                        data: [{
+                            type: "line",
+                            xValueType: "dateTime",
+                            dataPoints: getDataPointsFromCSV3(data)
+                        }]
+                    });
 
-            });
-            $.get("http://192.168.1.5/getHumidity", function (data) {
-                var chart = new CanvasJS.Chart("chartContainer2", {
-                    title: {
-                        text: "Temperature",
-                    },
-                    axisY:{
-                        minimum:60,
-                        maximum:80,
-                        interval: 5,
-                    },
-                    data: [{
-                        type: "line",
-                        xValueType: "dateTime",
-                        dataPoints: getDataPointsFromCSV2(data)
-                    }]
+                    chart.render();
+
                 });
+            }
+            update();
 
-                chart.render();
-
-            });
-
-            $.get("http://192.168.1.5/getHumidity", function (data) {
-                var chart = new CanvasJS.Chart("chartContainer3", {
-                    title: {
-                        text: "Pressure",
-                    },
-                    axisY:{
-                        minimum:970,
-                        maximum:1030,
-                        interval: 10,
-                    },
-                    data: [{
-                        type: "line",
-                        xValueType: "dateTime",
-                        dataPoints: getDataPointsFromCSV3(data)
-                    }]
-                });
-
-                chart.render();
-
-            });
         }
+
+
     </script>
 </head>
 
 <body>
     <div class="jumbotron">
-            <h1>Raspberry Pi Weather Dashboard</h1>
+        <p class="float-right" id=time></p>
+        <h1>Raspberry Pi Weather Dashboard</h1>
+
     </div>
-    
+
     <div class="container-fluid">
         <div class="row">
             <div class=col-sm-6>
-                    <h1>Current Weather</h1>
-                    <b>Temperature</b><p>71.4</p>
-                    <b>Pressure</b><p>1002</p>
-                    <b>Humidity</b><p>35%</p>
+                <h1>Current Weather</h1>
+                <b>Temperature</b>
+                <p id="CurTemp"></p>
+                <b>Pressure</b>
+                <p id="CurPress"></p>
+                <b>Humidity</b>
+                <p id="CurHumid"></p>
             </div>
             <div class=col-sm-6>
-                    <h1>24 Hour Average</h1>
-                    <b>Temperature</b><p>71.4</p>
-                    <b>Pressure</b><p>1002</p>
-                    <b>Humidity</b><p>35%</p>
+                <h1>24 Hour Average</h1>
+                <b>Temperature</b>
+                <p id='avgTemp'></p>
+                <b>Pressure</b>
+                <p id='avgPress'></p>
+                <b>Humidity</b>
+                <p id="avgHumid"></p>
             </div>
         </div>
         <div class="row">
@@ -154,6 +199,27 @@
         </div>
 
     </div>
+    <script>
+        function startTime() {
+            var today = new Date();
+            var h = today.getHours();
+            var m = today.getMinutes();
+            var s = today.getSeconds();
+            if (h > 12) {
+                h = h - 12;
+            }
+            m = checkTime(m);
+            s = checkTime(s);
+            document.getElementById('time').innerHTML =
+                "Time: " + h + ":" + m + ":" + s;
+            var t = setTimeout(startTime, 500);
+        }
+        function checkTime(i) {
+            if (i < 10) { i = "0" + i };  // add zero in front of numbers < 10
+            return i;
+        }
+        startTime();
+    </script>
 </body>
 
 </html>
