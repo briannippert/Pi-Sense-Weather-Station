@@ -62,7 +62,9 @@
                 var averageTemp = 0;
                 var averagePress = 0;
                 var averageHumid = 0
-                for (var i = csvLines.length - 2; i > csvLines.length - 1442; i--) {
+                if(csvLines.length > 1442)
+                {
+                    for (var i = csvLines.length - 2; i > csvLines.length - 1442; i--) {
                     points = csvLines[i].split(",");
                     averageTemp += parseFloat(points[2]);
                     averageHumid += parseFloat(points[0]);
@@ -77,6 +79,8 @@
                 avgTemp = avgTemp.toFixed(2)
                 avgHumid = avgHumid.toFixed(2)
                 avgPress = avgPress.toFixed(2)
+                
+                }
                 updateCurrent();
                 return dataPoints;
             }
@@ -114,7 +118,7 @@
 
 
             function update() {
-                $.get("http://192.168.1.5/getHumidity", function (data) {
+                $.get("/getHumidity", function (data) {
                     var chart = new CanvasJS.Chart("chartContainer", {
                         title: {
                             text: "Humidity",
@@ -129,7 +133,7 @@
                     chart.render();
 
                 });
-                $.get("http://192.168.1.5/getHumidity", function (data) {
+                $.get("/getHumidity", function (data) {
                     var chart = new CanvasJS.Chart("chartContainer2", {
                         title: {
                             text: "Temperature",
@@ -150,7 +154,7 @@
 
                 });
 
-                $.get("http://192.168.1.5/getHumidity", function (data) {
+                $.get("/getHumidity", function (data) {
                     var chart = new CanvasJS.Chart("chartContainer3", {
                         title: {
                             text: "Pressure",
