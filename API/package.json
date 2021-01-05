@@ -5,7 +5,8 @@
   "main": "server.js",
   "dependencies": {
     "chart-csv": "^1.0.3",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "sqlite3": "^5.0.0"
   },
   "devDependencies": {},
   "scripts": {
