@@ -1,0 +1,1 @@
+sqlite3 weather.db  < init.sql
