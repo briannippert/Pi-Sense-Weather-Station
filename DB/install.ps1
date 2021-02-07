@@ -1,3 +1,3 @@
-remove-item "./weather.db"
+remove-item "./weather.db" -ErrorAction SilentlyContinue
 $init = Get-Content "./init.sql"
-sqlite3 weather.db  "$init"
+sqlite3 weather.db  "$init"cd 

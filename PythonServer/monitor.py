@@ -7,6 +7,15 @@ sense = SenseHat()
 red = (255, 0, 0)
 green = (0, 255, 0)
 # Take readings from the 3 sensors
+
+def create_connection(db_file):
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+    except Error as e:
+        print(e)
+    return conn
+
 while(True):
   humidity=sense.get_humidity()
   temperature=sense.get_temperature()
@@ -17,13 +26,6 @@ while(True):
   pressure=round(pressure, 1)
   humidity=humidity + 5
   temperature = (temperature * 9/5) + 27
-  # Create the message to show on SenseHat
-  message = str(humidity)
-  # Rotate SenseHat screen if needed (0, 90, 180, 270)
-  sense.set_rotation(0)
-  # Display the message on SenseHat screen
-  #sense.show_message(message, scroll_speed=0.1,text_colour=red)
-  #Clear SenseHat screen
   sense.clear()
   with open('humidity.csv', mode='a') as csvFile:
       csvWriter = csv.writer(csvFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
