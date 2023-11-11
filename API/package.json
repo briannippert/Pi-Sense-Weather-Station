@@ -6,9 +6,10 @@
   "dependencies": {
     "chart-csv": "^1.0.3",
     "express": "^4.16.4",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^5.0.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"

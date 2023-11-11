@@ -1,8 +1,38 @@
-//Node Server
-const express = require('express')
-const app = express()
-const port = 80
+const express = require('express');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJSDoc = require('swagger-jsdoc');
+const app = express();
+const port = 80;
 const sqlite3 = require('sqlite3').verbose();
+
+// Swagger definition
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'Weather API',
+    version: '1.0.0',
+    description: 'A simple Express Weather API',
+  },
+  servers: [
+    {
+      url: `http://localhost:${port}`,
+      description: 'Local server',
+    },
+  ],
+};
+
+// Options for the swagger docs
+const options = {
+  swaggerDefinition,
+  // Paths to files containing OpenAPI definitions
+  apis: ['./index.js'],
+};
+
+// Initialize swagger-jsdoc
+const swaggerSpec = swaggerJSDoc(options);
+
+// Serve swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 let db = new sqlite3.Database('../db/weather.db', (err) => {
@@ -20,6 +50,35 @@ app.get('/getHumidity', function (req, res) {
   res.sendFile("/home/pi/Desktop/weather/humidity.csv");
 });
 
+
+/**
+ * @openapi
+ * /testDB:
+ *   get:
+ *     description: Retrieve data from the weather database
+ *     responses:
+ *       200:
+ *         description: A list of weather data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   temperature:
+ *                     type: number
+ *                     description: The temperature reading
+ *                   pressure:
+ *                     type: number
+ *                     description: The pressure reading
+ *                   humidity:
+ *                     type: number
+ *                     description: The humidity reading
+ *                   time_dt:
+ *                     type: string
+ *                     description: The datetime of the reading
+ */
 app.get('/testDB', function (req, res) {
 
   let sql = `SELECT * FROM weather`;
